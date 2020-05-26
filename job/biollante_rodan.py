@@ -35,4 +35,9 @@ class BiollanteRodan(RodanTask):
         raise NotImplementedError
     
     def test_my_task(self, testcase):
+        # inputs = {}
+        # outputs = {}
+        # self.run_my_task(inputs, {}, outputs)
+        # result = outputs['out'][0]['resource_path']
+        # testcase.assertEqual(result.format, 'PNG')
         raise NotImplementedError
