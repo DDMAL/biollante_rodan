@@ -33,7 +33,7 @@ class BiollanteRodan(RodanTask):
 
     def my_error_information(self, exc, traceback):
         raise NotImplementedError
-    
+
     def test_my_task(self, testcase):
         # inputs = {}
         # outputs = {}
