@@ -29,6 +29,15 @@ class TestSelection(unittest.TestCase):
             }
         )
 
+    def test_overwrite(self):
+        self.selection.setRouletteWheel()
+        self.assertEqual(self.selection.method, "roulette")
+        self.assertEqual(len(self.selection.parameters), 0)
+        self.selection.setTournamentSelection(3)
+        self.assertEqual(self.selection.method, "tournament")
+        self.assertEqual(len(self.selection.parameters), 1)
+        self.assertEqual(self.selection.parameters["tSize"], 3)
+
 
 class TestReplacement(unittest.TestCase):
     def setUp(self):
@@ -48,6 +57,15 @@ class TestReplacement(unittest.TestCase):
                 "parameters": {"tSize": 30}
             }
         )
+
+    def test_overwrite(self):
+        self.replacement.setSSGAworse()
+        self.assertEqual(self.replacement.method, "SSGAworse")
+        self.assertEqual(len(self.replacement.parameters), 0)
+        self.replacement.setSSGAdetTournament(3)
+        self.assertEqual(self.replacement.method, "SSGAdetTournament")
+        self.assertEqual(len(self.replacement.parameters), 1)
+        self.assertEqual(self.replacement.parameters["tSize"], 3)
 
 
 class TestMutation(unittest.TestCase):
