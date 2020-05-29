@@ -26,3 +26,6 @@ jobs:
     - name: Lint with flake8
       run: |
         flake8 ./job/ --count --statistics
+    - name: Run tests
+      run: |
+        python -m unittest discover ./job/
