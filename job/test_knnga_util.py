@@ -38,6 +38,15 @@ class TestSelection(unittest.TestCase):
         self.assertEqual(len(self.selection.parameters), 1)
         self.assertEqual(self.selection.parameters["tSize"], 3)
 
+    def test_all_settings(self):
+        # This just shouldn't error
+        self.selection.setRandomSelection()
+        self.selection.setRankSelection()
+        self.selection.setRouletteWheel()
+        self.selection.setRouletteWheelScaled()
+        self.selection.setStochUniSampling()
+        self.selection.setTournamentSelection()
+
 
 class TestReplacement(unittest.TestCase):
     def setUp(self):
@@ -66,6 +75,12 @@ class TestReplacement(unittest.TestCase):
         self.assertEqual(self.replacement.method, "SSGAdetTournament")
         self.assertEqual(len(self.replacement.parameters), 1)
         self.assertEqual(self.replacement.parameters["tSize"], 3)
+
+    def test_all_settings(self):
+        # This just shouldn't error
+        self.replacement.setGenerationalReplacement()
+        self.replacement.setSSGAdetTournament()
+        self.replacement.setSSGAworse()
 
 
 class TestMutation(unittest.TestCase):
@@ -111,6 +126,13 @@ class TestMutation(unittest.TestCase):
             }]
         )
 
+    def test_all_settings(self):
+        self.mutation.setBinaryMutation()
+        self.mutation.setGaussMutation(10, 0.0, 1.0, 0.05, 1.0)
+        self.mutation.setInversionMutation()
+        self.mutation.setShiftMutation()
+        self.mutation.setSwapMutation()
+
 
 class TestCrossover(unittest.TestCase):
     def setUp(self):
@@ -151,6 +173,13 @@ class TestCrossover(unittest.TestCase):
             }]
         )
 
+    def test_all_settings(self):
+        self.crossover.setHypercubeCrossover(30, 0.0, 1.0, 0.05)
+        self.crossover.setNPointCrossover(5)
+        self.crossover.setSBXCrossover(30, 0.0, 1.0, 1.15)
+        self.crossover.setSegmentCrossover(30, 0.0, 1.0, 0.95)
+        self.crossover.setUniformCrossover(0.5)
+
 
 class TestStopCriteria(unittest.TestCase):
     def setUp(self):
@@ -185,3 +214,9 @@ class TestStopCriteria(unittest.TestCase):
                 "parameters": {"n": 150}
             }]
         )
+
+    def test_all_settings(self):
+        self.sc.setBestFitnessStop(1.0)
+        self.sc.setMaxFitnessEvals(6000)
+        self.sc.setMaxGenerations(102)
+        self.sc.setSteadyStateStop(40, 15)
