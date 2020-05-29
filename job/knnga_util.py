@@ -286,7 +286,7 @@ class SerializableCrossover:
                 }
             }
         )
-        self.crossover.setSBXCrossover(numFeatures, min, max, eta)
+        self.crossover.setSBXcrossover(numFeatures, min, max, eta)
 
     def setSegmentCrossover(self, numFeatures, min, max, alpha=0.0):
         self.methods = [x for x in self.methods if x["method"] != "segment"]
