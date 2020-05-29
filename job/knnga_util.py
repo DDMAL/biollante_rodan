@@ -34,12 +34,12 @@ class SerializableSelection():
     def setRouletteWheel(self):
         self.method = "roulette"
         self.parameters = {}
-        self.selection.setRouletteWheel()
+        self.selection.setRoulettWheel()
 
     def setRouletteWheelScaled(self, pressure=2.0):
         self.method = "roulette_scaled"
         self.parameters = {"pressure": pressure}
-        self.selection.setRouletteWheelScaled(pressure)
+        self.selection.setRoulettWheelScaled(pressure)
 
     def setStochUniSampling(self):
         self.method = "stochiastic"
