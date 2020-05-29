@@ -152,11 +152,11 @@ class SerializableReplacement():
             e.setGenerationalReplacement()
         elif d["method"] == "SSGAdetTournament":
             if "tSize" in d["parameters"]:
-                d.setSSGAdetTournament(d["parameters"]["tSize"])
+                e.setSSGAdetTournament(d["parameters"]["tSize"])
             else:
-                d.setSSGAdetTournament()
+                e.setSSGAdetTournament()
         elif d["method"] == "SSGAworse":
-            d.setSSGAworse()
+            e.setSSGAworse()
         return e
 
 
@@ -376,7 +376,7 @@ class SerializableCrossover:
         e = SerializableCrossover()
         for op in d:
             m = op["method"]
-            p = op["parmeters"]
+            p = op["parameters"]
 
             if m == "hypercube":
                 if "alpha" in p:

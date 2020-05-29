@@ -29,6 +29,12 @@ class TestSelection(unittest.TestCase):
             }
         )
 
+    def test_from_json(self):
+        self.selection.setRouletteWheelScaled()
+        testJSON = self.selection.toJSON()
+        test = knnga_util.SerializableSelection.fromJSON(testJSON)
+        self.assertEqual(self.selection, test)
+
     def test_overwrite(self):
         self.selection.setRouletteWheel()
         self.assertEqual(self.selection.method, "roulette")
@@ -66,6 +72,12 @@ class TestReplacement(unittest.TestCase):
                 "parameters": {"tSize": 30}
             }
         )
+
+    def test_from_json(self):
+        self.replacement.setSSGAworse()
+        testJSON = self.replacement.toJSON()
+        test = knnga_util.SerializableReplacement.fromJSON(testJSON)
+        self.assertEqual(self.replacement, test)
 
     def test_overwrite(self):
         self.replacement.setSSGAworse()
@@ -110,6 +122,13 @@ class TestMutation(unittest.TestCase):
                 }
             }])
         )
+
+    def test_from_json(self):
+        self.mutation.setInversionMutation()
+        self.mutation.setBinaryMutation()
+        testJSON = self.mutation.toJSON()
+        test = knnga_util.SerializableMutation.fromJSON(testJSON)
+        self.assertEqual(self.mutation, test)
 
     def test_overwrite_same(self):
         self.mutation.setBinaryMutation(0.07, False)
@@ -161,6 +180,12 @@ class TestCrossover(unittest.TestCase):
             }])
         )
 
+    def test_from_json(self):
+        self.crossover.setSegmentCrossover(30, 0.0, 1.0)
+        testJSON = self.crossover.toJSON()
+        test = knnga_util.SerializableCrossover.fromJSON(testJSON)
+        self.assertEqual(self.crossover, test)
+
     def test_overwrite_same(self):
         self.crossover.setNPointCrossover(10)
         self.crossover.setNPointCrossover(20)
@@ -202,6 +227,12 @@ class TestStopCriteria(unittest.TestCase):
                 "parameters": {"n": 5000}
             }])
         )
+
+    def test_from_json(self):
+        self.sc.setSteadyStateStop()
+        testJSON = self.sc.toJSON()
+        test = knnga_util.SerializableStopCriteria.fromJSON(testJSON)
+        self.assertEqual(self.sc, test)
 
     def test_overwrite_same(self):
         self.sc.setMaxGenerations(100)
