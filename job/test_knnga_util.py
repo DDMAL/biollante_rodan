@@ -96,7 +96,7 @@ class TestMutation(unittest.TestCase):
         self.mutation.setGaussMutation(30, 0.0, 1.0, 0.5, 1.0)
         self.assertEqual(
             json.loads(self.mutation.toJSON()),
-            [{
+            sorted([{
                 "method": "inversion",
                 "parameters": {}
             }, {
@@ -108,7 +108,7 @@ class TestMutation(unittest.TestCase):
                     "sigma": 0.5,
                     "rate": 1.0
                 }
-            }]
+            }])
         )
 
     def test_overwrite_same(self):
@@ -147,7 +147,7 @@ class TestCrossover(unittest.TestCase):
         self.crossover.setHypercubeCrossover(30, 0.0, 1.0)
         self.assertEqual(
             json.loads(self.crossover.toJSON()),
-            [{
+            sorted([{
                 "method": "uniform",
                 "parameters": {"preference": 0.5}
             }, {
@@ -158,7 +158,7 @@ class TestCrossover(unittest.TestCase):
                     "max": 1.0,
                     "alpha": 0.0
                 }
-            }]
+            }])
         )
 
     def test_overwrite_same(self):
@@ -194,13 +194,13 @@ class TestStopCriteria(unittest.TestCase):
         self.sc.setMaxFitnessEvals()
         self.assertEqual(
             json.loads(self.sc.toJSON()),
-            [{
+            sorted([{
                 "method": "maxGenerations",
                 "parameters": {"n": 20}
             }, {
                 "method": "maxFitnessEvals",
                 "parameters": {"n": 5000}
-            }]
+            }])
         )
 
     def test_overwrite_same(self):

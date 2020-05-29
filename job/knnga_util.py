@@ -189,6 +189,7 @@ class SerializableMutation:
                 }
             }
         )
+        self.methods.sort()
         self.mutation.setBinaryMutation(rate, normalize)
 
     def setGaussMutation(self, numberFeatures, min, max, sigma, rate):
@@ -205,6 +206,7 @@ class SerializableMutation:
                 }
             }
         )
+        self.methods.sort()
         self.mutation.setGaussMutation(numberFeatures, min, max, sigma, rate)
 
     def setInversionMutation(self):
@@ -215,6 +217,7 @@ class SerializableMutation:
                     "parameters": {}
                 }
             )
+        self.methods.sort()
         self.mutation.setInversionMutation()
 
     def setShiftMutation(self):
@@ -225,6 +228,7 @@ class SerializableMutation:
                     "parameters": {}
                 }
             )
+        self.methods.sort()
         self.mutation.setShiftMutation()
 
     def setSwapMutation(self):
@@ -235,6 +239,7 @@ class SerializableMutation:
                     "parameters": {}
                 }
             )
+        self.methods.sort()
         self.mutation.setSwapMutation()
 
     def toJSON(self):
@@ -305,6 +310,7 @@ class SerializableCrossover:
                 }
             }
         )
+        self.methods.sort()
         self.crossover.setHypercubeCrossover(numFeatures, min, max, alpha)
 
     def setNPointCrossover(self, n):
@@ -315,6 +321,7 @@ class SerializableCrossover:
                 "parameters": {"n": n}
             }
         )
+        self.methods.sort()
         self.crossover.setNPointCrossover(n)
 
     def setSBXCrossover(self, numFeatures, min, max, eta=1.0):
@@ -330,6 +337,7 @@ class SerializableCrossover:
                 }
             }
         )
+        self.methods.sort()
         self.crossover.setSBXcrossover(numFeatures, min, max, eta)
 
     def setSegmentCrossover(self, numFeatures, min, max, alpha=0.0):
@@ -345,6 +353,7 @@ class SerializableCrossover:
                 }
             }
         )
+        self.methods.sort()
         self.crossover.setSegmentCrossover(numFeatures, min, max, alpha)
 
     def setUniformCrossover(self, preference=0.5):
@@ -355,6 +364,7 @@ class SerializableCrossover:
                 "parameters": {"preference": preference}
             }
         )
+        self.methods.sort()
         self.crossover.setUniformCrossover(preference)
 
     def toJSON(self):
@@ -446,6 +456,7 @@ class SerializableStopCriteria:
                 "parameters": {"optimum": optimum}
             }
         )
+        self.methods.sort()
         self.sc.setBestFitnessStop(optimum)
 
     def setMaxFitnessEvals(self, n=5000):
@@ -457,6 +468,7 @@ class SerializableStopCriteria:
                 "parameters": {"n": n}
             }
         )
+        self.methods.sort()
         self.sc.setMaxFitnessEvals(n)
 
     def setMaxGenerations(self, n=100):
@@ -468,6 +480,7 @@ class SerializableStopCriteria:
                 "parameters": {"n": n}
             }
         )
+        self.methods.sort()
         self.sc.setMaxGenerations(n)
 
     def setSteadyStateStop(self, minGens=40, noChangeGens=10):
@@ -482,6 +495,7 @@ class SerializableStopCriteria:
                 }
             }
         )
+        self.methods.sort()
         self.sc.setSteadyStateStop(minGens, noChangeGens)
 
     def toJSON(self):
