@@ -13,6 +13,7 @@ class TestSelection(unittest.TestCase):
         self.selection = knnga_util.SerializableSelection()
 
     def test_to_json(self):
+        self.selection.setRandomSelection()     # This should be overwritten
         self.selection.setRankSelection(1.5, 1.0)
         self.assertEqual(
             json.loads(self.selection.toJSON()),
@@ -31,6 +32,8 @@ class TestReplacement(unittest.TestCase):
         self.replacement = knnga_util.SerializableReplacement()
 
     def test_to_json(self):
+        # This should be overwritten
+        self.replacement.setGenerationalReplacement()
         self.replacement.setSSGAdetTournament(30)
         self.assertEqual(
             json.loads(self.replacement.toJSON()),
@@ -46,10 +49,15 @@ class TestMutation(unittest.TestCase):
         self.mutation = knnga_util.SerializableMutation()
 
     def test_to_json(self):
+        # These should be combined
+        self.mutation.setInversionMutation()
         self.mutation.setGaussMutation(30, 0.0, 1.0, 0.5, 1.0)
         self.assertEqual(
             json.loads(self.mutation.toJSON()),
             [{
+                "method": "inversion",
+                "parameters": {}
+            }, {
                 "method": "gauss",
                 "parameters": {
                     "numberFeatures": 30,
@@ -67,10 +75,15 @@ class TestCrossover(unittest.TestCase):
         self.crossover = knnga_util.SerializableCrossover()
 
     def test_to_json(self):
+        # These should be combined
+        self.crossover.setUniformCrossover()
         self.crossover.setHypercubeCrossover(30, 0.0, 1.0)
         self.assertEqual(
             json.loads(self.crossover.toJSON()),
             [{
+                "method": "uniform",
+                "parameters": {"preference": 0.5}
+            }, {
                 "method": "hypercube",
                 "parameters": {
                     "numFeatures": 30,
@@ -87,10 +100,15 @@ class TestStopCriteria(unittest.TestCase):
         self.sc = knnga_util.SerializableStopCriteria()
 
     def test_to_json(self):
+        # These should be combined
+        self.sc.setMaxGenerations(20)
         self.sc.setMaxFitnessEvals()
         self.assertEqual(
             json.loads(self.sc.toJSON()),
             [{
+                "method": "maxGenerations",
+                "parameters": {"n": 20}
+            }, {
                 "method": "maxFitnessEvals",
                 "parameters": {"n": 5000}
             }]
