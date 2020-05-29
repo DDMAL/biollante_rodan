@@ -18,6 +18,19 @@ class SerializableSelection():
         self.parameters = {}
         self.selection = knnga.GASelection()
 
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            a = self.__dict__.copy()
+            del a['selection']
+            b = self.__dict__.copy()
+            del b['selection']
+            return a == b
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def setRandomSelection(self):
         self.method = "random"
         self.parameters = {}
@@ -98,6 +111,19 @@ class SerializableReplacement():
         self.parameters = {}
         self.replacement = knnga.GAReplacement()
 
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            a = self.__dict__.copy()
+            del a['replacement']
+            b = self.__dict__.copy()
+            del b['replacement']
+            return a == b
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def setGenerationalReplacement(self):
         self.method = "generational"
         self.parameters = {}
@@ -142,6 +168,15 @@ class SerializableMutation:
     def __init__(self):
         self.methods = []
         self.mutation = knnga.GAMutation()
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.methods == other.methods
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def setBinaryMutation(self, rate=0.05, normalize=False):
         self.methods = [x for x in self.methods if x["method"] != "binary"]
@@ -247,6 +282,15 @@ class SerializableCrossover:
     def __init__(self):
         self.methods = []
         self.crossover = knnga.GACrossover()
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.methods == other.methods
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def setHypercubeCrossover(self, numFeatures, min, max, alpha=0.0):
         self.methods = [x for x in self.methods if x["method"] != "hypercube"]
@@ -383,6 +427,15 @@ class SerializableStopCriteria:
     def __init__(self):
         self.methods = []
         self.sc = knnga.GAStopCriteria()
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.methods == other.methods
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def setBestFitnessStop(self, optimum=1.0):
         self.methods = [x for x in self.methods
