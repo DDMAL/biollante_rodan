@@ -203,9 +203,7 @@ class SerializableMutation:
         self.mutation.setSwapMutation()
 
     def toJSON(self):
-        d = self.__dict__.copy()
-        del d['mutation']
-        return json.dumps(d)
+        return json.dumps(self.methods)
 
     @staticmethod
     def fromJSON(jsonString):
@@ -316,9 +314,7 @@ class SerializableCrossover:
         self.crossover.setUniformCrossover(preference)
 
     def toJSON(self):
-        d = self.__dict__.copy()
-        del d['crossover']
-        return json.dumps(d)
+        return json.dumps(self.methods)
 
     @staticmethod
     def fromJSON(jsonString):
@@ -436,9 +432,7 @@ class SerializableStopCriteria:
         self.sc.setSteadyStateStop(minGens, noChangeGens)
 
     def toJSON(self):
-        d = self.__dict__.copy()
-        del d["sc"]
-        return json.dumps(d)
+        return json.dumps(self.methods)
 
     @staticmethod
     def fromJSON(jsonString):
