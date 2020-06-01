@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import unicode_literals
+from gamera import knnga
 
 import json
 import knnga_util
@@ -251,3 +252,34 @@ class TestStopCriteria(unittest.TestCase):
         self.sc.setMaxFitnessEvals(6000)
         self.sc.setMaxGenerations(102)
         self.sc.setSteadyStateStop(40, 15)
+
+
+class TestBaseSetting(unittest.TestCase):
+    def test_to_json(self):
+        base = knnga.GABaseSetting()
+        self.assertEqual(
+            json.loads(knnga_util.base_to_json(base)),
+            {
+                "opMode": knnga.GA_SELECTION,
+                "popSize": 75,
+                "crossRate": 0.95,
+                "mutRate": 0.05
+            }
+        )
+
+    def test_from_json(self):
+        default = knnga.GABaseSetting()
+        default.popSize = 80
+        default.mutRate = 0.06
+        loaded = knnga_util.json_to_base(
+            json.dumps({
+                "opMode": knnga.GA_SELECTION,
+                "popSize": 80,
+                "crossRate": 0.95,
+                "mutRate": 0.06
+            })
+        )
+        self.assertEqual(default.opMode, loaded.opMode)
+        self.assertEqual(default.popSize, loaded.popSize)
+        self.assertEqual(default.crossRate, loaded.crossRate)
+        self.assertEqual(default.mutRate, loaded.mutRate)
