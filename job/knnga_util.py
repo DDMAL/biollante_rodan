@@ -534,3 +534,22 @@ class SerializableStopCriteria:
                 else:
                     e.setSteadyStateStop()
         return e
+
+
+def base_to_json(setting):
+    return json.dumps({
+        "opMode": setting.opMode,
+        "popSize": setting.popSize,
+        "crossRate": setting.crossRate,
+        "mutRate": setting.mutRate
+    })
+
+
+def json_to_base(jsonString):
+    vals = json.loads(jsonString)
+    base = knnga.GABaseSetting()
+    base.opMode = vals["opMode"]
+    base.popSize = vals["popSize"]
+    base.crossRate = vals["crossRate"]
+    base.mutRate = vals["mutRate"]
+    return base
