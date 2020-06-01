@@ -19,8 +19,22 @@ class BiollanteRodan(RodanTask):
 
     logger = get_task_logger(__name__)
 
-    input_port_types = []   # TODO
-    output_port_types = []  # TODO
+    input_port_types = [
+        {
+            "name": "kNN Training Data",
+            "minimum": 1,
+            "maximum": 1,
+            "resource_types": ["application/gamera+xml"]
+        }
+    ]
+    output_port_types = [
+        {
+            "name": "GA Optimized Classifier",
+            "minimum": 1,
+            "maximum": 1,
+            "resource_types": ["application/gamera+xml"]
+        }
+    ]
 
     def get_my_interface(self, inputs, settings):
         raise NotImplementedError
