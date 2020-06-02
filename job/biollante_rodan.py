@@ -8,6 +8,7 @@ from gamera import knn, knnga
 from rodan.jobs.base import RodanTask
 from time import sleep
 
+import json
 import knnga_util as util
 
 
@@ -57,6 +58,16 @@ class BiollanteRodan(RodanTask):
     ]
 
     def get_my_interface(self, inputs, settings):
+        context = {
+            "base": json.loads(settings["@base"]),
+            "selction": json.loads(settings["@selection"]),
+            "replacement": json.loads(settings["@replacement"]),
+            "mutation": json.loads(settings["@mutation"]),
+            "crossover": json.loads(settings["@crossover"]),
+            "stop_critera": json.loads(settings["@stop_criteria"]),
+            "optimizer": settings["@optimizer"]
+        }
+        return "TODO", context
         raise NotImplementedError
 
     def validate_my_user_input(self, inputs, settings, user_input):
@@ -136,7 +147,7 @@ class BiollanteRodan(RodanTask):
         self.crossover = util.SerializableCrossover \
             .fromJSON(options["crossover"])
         self.stop_criteria = util.SerializableStopCriteria \
-            .fromJSON(options["stopCriteria"])
+            .fromJSON(options["stop_critera"])
 
         parallel = knnga.GAParallelization()
         parallel.mode = True
