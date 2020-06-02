@@ -1,6 +1,7 @@
 # Copyright (C) 2020 Juliette Regimbal
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+from __future__ import unicode_literals
 
 from celery.utils.log import get_task_logger
 from gamera import knn, knnga
@@ -85,7 +86,19 @@ class BiollanteRodan(RodanTask):
 
         if settings["@state"] == STATE_NOT_OPTIMIZING:
             # Create set of parameters for template
-            return self.WAITING_FOR_INPUT()
+            return self.WAITING_FOR_INPUT({
+                "@state": STATE_NOT_OPTIMIZING,
+                "@base": util.base_to_json(self.base),
+                "@selection": self.selection.toJSON(),
+                "@replacemnt": self.replacement.toJSON(),
+                "@mutation": self.mutation.toJSON(),
+                "@crossover": self.crossover.toJSON(),
+                "@stop_criteria": self.stop_critera.toJSON(),
+                "@optimizer": None if not self.optimizer else {
+                    "generation": self.optimizer.generation,
+                    "bestFitness": self.optimizer.bestFitness
+                }
+            })
         elif settings["@state"] == STATE_OPTIMIZING:
             # Wait for optimization to finish
             while self.optimizer.status:
