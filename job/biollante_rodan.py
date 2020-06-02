@@ -68,22 +68,32 @@ class BiollanteRodan(RodanTask):
             "optimizer": settings["@optimizer"]
         }
         return "TODO", context
-        raise NotImplementedError
 
     def validate_my_user_input(self, inputs, settings, user_input):
+        assert settings["@state"] == STATE_NOT_OPTIMIZING, \
+            "Must not be optimizing! State is %s" % str(settings["@state"])
         if user_input["method"] == "start":
-            if settings["@state"] == STATE_NOT_OPTIMIZING:
-                pass
-            pass
+            try:
+                self.setup_optimizer(user_input)
+            except AssertionError as e:
+                return self.WAITING_FOR_INPUT({}, response=str(e))
+
+            d = self.knnga_dict()
+            d["@state"] = STATE_OPTIMIZING
+            return d
+
         elif user_input["method"] == "finish":
-            pass
-        raise NotImplementedError
+            assert self.optimizer is not None, "Optimizer is unset!"
+            return {"@state": STATE_FINISHING}
+        else:
+            self.logger.warn("Unknown method: %s" % user_input["method"])
 
     def run_my_task(self, inputs, settings, outputs):
         if "@state" not in settings:
             settings["@state"] = STATE_INIT
 
         if settings["@state"] == STATE_INIT:
+            self.logger.debug("State: Init")
             self.classifier = knn.kNNNonInteractive(
                 inputs["kNN Training Data"][0]["resource_path"]
             )
@@ -96,21 +106,13 @@ class BiollanteRodan(RodanTask):
             self.stop_critera = util.SerializableStopCriteria()
 
         if settings["@state"] == STATE_NOT_OPTIMIZING:
+            self.logger.debug("State: Not Optimizing")
             # Create set of parameters for template
-            return self.WAITING_FOR_INPUT({
-                "@state": STATE_NOT_OPTIMIZING,
-                "@base": util.base_to_json(self.base),
-                "@selection": self.selection.toJSON(),
-                "@replacemnt": self.replacement.toJSON(),
-                "@mutation": self.mutation.toJSON(),
-                "@crossover": self.crossover.toJSON(),
-                "@stop_criteria": self.stop_critera.toJSON(),
-                "@optimizer": None if not self.optimizer else {
-                    "generation": self.optimizer.generation,
-                    "bestFitness": self.optimizer.bestFitness
-                }
-            })
+            d = self.knnga_dict()
+            d["@state"] = STATE_NOT_OPTIMIZING
+            return self.WAITING_FOR_INPUT(d)
         elif settings["@state"] == STATE_OPTIMIZING:
+            self.logger.debug("State: Optimizing")
             # Wait for optimization to finish
             while self.optimizer.status:
                 sleep(30000)    # 30 seconds
@@ -118,6 +120,7 @@ class BiollanteRodan(RodanTask):
             settings["@state"] = STATE_NOT_OPTIMIZING
             return self.WAITING_FOR_INPUT()
         else:   # Finish
+            self.logger.debug("State: Finishing")
             self.classifier.to_xml_filename(
                 outputs["GA Optimized Classifier"][0]["resource_path"]
             )
@@ -134,20 +137,37 @@ class BiollanteRodan(RodanTask):
         # testcase.assertEqual(result, 'what you expect it to test')
         raise NotImplementedError
 
-    def create_context_dict(self):
-        pass
+    def knnga_dict(self):
+        return {
+            "@base": util.base_to_json(self.base),
+            "@selection": self.selection.toJSON(),
+            "@replacemnt": self.replacement.toJSON(),
+            "@mutation": self.mutation.toJSON(),
+            "@crossover": self.crossover.toJSON(),
+            "@stop_criteria": self.stop_critera.toJSON(),
+            "@optimizer": None if not self.optimizer else {
+                "generation": self.optimizer.generation,
+                "bestFitness": self.optimizer.bestFitness
+            }
+        }
 
     def setup_optimizer(self, options):
-        self.base = util.json_to_base(options["base"])
-        self.selection = util.SerializableSelection \
+        base = util.json_to_base(options["base"])
+        selection = util.SerializableSelection \
             .fromJSON(options["selection"])
-        self.replacement = util.SerializableReplacement \
+        replacement = util.SerializableReplacement \
             .fromJSON(options["replacement"])
-        self.mutation = util.SerializableMutation.fromJSON(options["mutation"])
-        self.crossover = util.SerializableCrossover \
+        mutation = util.SerializableMutation.fromJSON(options["mutation"])
+        crossover = util.SerializableCrossover \
             .fromJSON(options["crossover"])
-        self.stop_criteria = util.SerializableStopCriteria \
+        stop_criteria = util.SerializableStopCriteria \
             .fromJSON(options["stop_critera"])
+
+        # Add assertions to ensure valid optimizing can occur!
+
+        self.base, self.selection, self.replacement, self.mutation, \
+            self.crossover, self.stop_critera = base, selection,    \
+            replacement, mutation, crossover, stop_criteria
 
         parallel = knnga.GAParallelization()
         parallel.mode = True
