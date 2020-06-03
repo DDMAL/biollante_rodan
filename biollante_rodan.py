@@ -6,10 +6,12 @@ from __future__ import unicode_literals
 from celery.utils.log import get_task_logger
 from gamera import knn, knnga
 from rodan.jobs.base import RodanTask
+from tempfile import NamedTemporaryFile as NTF
 from time import sleep
 
 import json
 import knnga_util as util
+import shutil
 
 
 STATE_INIT = 0
@@ -94,9 +96,15 @@ class BiollanteRodan(RodanTask):
 
         if settings["@state"] == STATE_INIT:
             self.logger.debug("State: Init")
-            self.classifier = knn.kNNNonInteractive(
-                inputs["kNN Training Data"][0]["resource_path"]
-            )
+            # File must have xml extension because ???
+            # Otherwise Gamera will raise an error.
+            with NTF(suffix=".xml") as temp:
+                self.logger.debug(temp.name)
+                shutil.copy2(
+                    inputs["kNN Training Data"][0]["resource_path"],
+                    temp.name
+                )
+                self.classifier = knn.kNNNonInteractive(temp.name)
 
             self.base = knnga.GABaseSetting()
             self.selection = util.SerializableSelection()
