@@ -106,3 +106,95 @@ function generateReplacement () {
     replacement.parameters = vals;
     return replacement;
 }
+
+function generateCrossover () {
+    let crossover = [];
+    document.querySelectorAll("#crossover-contents input[type='checkbox']:checked").forEach(input => {
+        let method = { "method": input.value };
+        let level = input.closest(".level");
+        let vals = {};
+        if (level) {
+            $(level).find(".level-right input").serializeArray().map(entry => {
+                if (!Number.isNaN(Number(entry.value))) {
+                    vals[entry.name] = Number(entry.value);
+                } else {
+                    vals[entry.name] = entry.value;
+                }
+            });
+        }
+        method.parameters = vals;
+        crossover.push(method);
+    });
+    return crossover;
+}
+
+function generateMutation () {
+    let mutation = [];
+    document.querySelectorAll("#mutation-contents input[type='checkbox']:checked").forEach(input => {
+        let method = { "method": input.value };
+        let level = input.closest(".level");
+        let vals = {};
+        if (level) {
+            $(level).find(".level-right input").serializeArray().map(entry => {
+                if (!Number.isNaN(Number(entry.value))) {
+                    vals[entry.name] = Number(entry.value);
+                } else {
+                    vals[entry.name] = entry.value;
+                }
+            });
+        }
+        method.parameters = vals;
+        mutation.push(method);
+    });
+    return mutation;
+}
+
+function generateStopCriteria () {
+    let stopCriteria = [];
+    document.querySelectorAll("#stop-criteria-contents input[type='checkbox']:checked").forEach(input => {
+        let method = { "method": input.value };
+        let level = input.closest(".level");
+        let vals = {};
+        if (level) {
+            $(level).find(".level-right input").serializeArray().map(entry => {
+                if (!Number.isNaN(Number(entry.value))) {
+                    vals[entry.name] = Number(entry.value);
+                } else {
+                    vals[entry.name] = entry.value;
+                }
+            });
+        }
+        method.parameters = vals;
+        stopCriteria.push(method);
+    });
+    return stopCriteria;
+}
+
+function generateFullParams () {
+    return {
+        "base": generateBase(),
+        "selection": generateSelection(),
+        "replacement": generateReplacement(),
+        "mutation": generateMutation(),
+        "crossover": generateCrossover(),
+        "stop_criteria": generateStopCriteria()
+    };
+}
+
+$("#start-button").on("click", () => {
+    let startObj = generateFullParams();
+    startObj.method = "start";
+    $.ajax({
+        contentType: "application/json",
+        data: JSON.stringify(startObj),
+        error: (jqXHR, textStatus, error) => {
+            console.debug(textStatus);
+            console.debug(error);
+        },
+        method: "POST",
+        success: (data, textStatus, jqXHR) => {
+            console.debug("success");
+            console.debug(textStatus);
+        }
+    });
+});
