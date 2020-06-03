@@ -11,6 +11,15 @@ function handleTab (evt) {
         case "tab-replacement":
             document.getElementById("replacement-contents").classList.remove("is-sr-only");
             break;
+        case "tab-crossover":
+            document.getElementById("crossover-contents").classList.remove("is-sr-only");
+            break;
+        case "tab-mutation":
+            document.getElementById("mutation-contents").classList.remove("is-sr-only");
+            break;
+        case "tab-stop-criteria":
+            document.getElementById("stop-criteria-contents").classList.remove("is-sr-only");
+            break;
     }
 }
 
@@ -47,6 +56,29 @@ document.querySelectorAll("#replacement-contents input[type='radio']").forEach(i
     });
 });
 
+document.querySelectorAll("#crossover-contents input[type='checkbox']").forEach(input => {
+    input.addEventListener("input", () => {
+        document.querySelectorAll("#crossover-contents input[type='checkbox']").forEach(input => {
+            updateHelperDisabled(input);
+        });
+    });
+});
+
+document.querySelectorAll("#mutation-contents input[type='checkbox']").forEach(input => {
+    input.addEventListener("input", () => {
+        document.querySelectorAll("#mutation-contents input[type='checkbox']").forEach(input => {
+            updateHelperDisabled(input);
+        });
+    });
+});
+
+document.querySelectorAll("#stop-criteria-contents input[type='checkbox']").forEach(input => {
+    input.addEventListener("input", () => {
+        document.querySelectorAll("#stop-criteria-contents input[type='checkbox']").forEach(input => {
+            updateHelperDisabled(input);
+        });
+    });
+});
 function generateSelection () {
     let vals = {};
     $('#selection-contents input').serializeArray().map(entry => { vals[entry.name] = entry.value; });
