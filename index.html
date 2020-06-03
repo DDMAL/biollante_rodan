@@ -1,0 +1,187 @@
+<html>
+  <head>
+    <title>Biollante - GA Optimization</title>
+    <link type="text/css" href="https://cdn.jsdelivr.net/npm/bulma@0.8.2/css/bulma.min.css" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <section class="section">
+      <div class="container">
+        {% if optimizer %}
+        <p>{{ optimizer }}</p>
+        {% else %}
+        <p>No previous optimizer results.</p>
+        {% endif %}
+      </div>
+    </section>
+    <section class="section">
+      <div class="container" id="base-settings">
+        <h2 class="subtitle">Base Settings</h2>
+        <div class="field">
+          <div class="control">
+            <label class="radio">
+              <input type="radio" name="opMode" value="0"
+                 {% if base.opMode == 0 %}checked{% endif %}>
+              Feature Selection
+            </label>
+            <label class="radio">
+              <input type="radio" name="opMode" value="1"
+                 {% if opMode == 1 %}checked{% endif %}>
+              Feature Weighting
+            </label>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="base-popsize">Population Size</label>
+          <div class="control">
+            <input class="input" type="number" name="popSize" id="base-popsize" min="0" value="{{ base.popSize }}">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="base-mutrate">Mutation Rate</label>
+          <div class="control">
+            <input class="input" type="number" name="mutRate" id="base-mutrate" min="0" max="1" step="0.01" value="{{ base.mutRate }}">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="base-crossrate">Crossover Rate</label>
+          <div class="control">
+            <input class="input" type="number" name="crossRate" id="base-crossrate" min="0" max="1" ste="0.01" value="{{ base.crossRate }}">
+          </div>
+        </div>
+      </div>
+      <br>
+      <div class="container">
+        <div class="tabs is-centered">
+          <ul>
+            <li id="tab-selection" class="is-active"><a>Selection</a></li>
+            <li id="tab-crossover"><a>Crossover</a></li>
+            <li id="tab-mutation"><a>Mutation</a></li>
+            <li id="tab-replacement"><a>Replacement</a></li>
+            <li id="tab-stop-criteria"><a>Stop Criteria</a></li>
+          </ul>
+        </div>
+        <!-- Controls for Selection Settings -->
+        <form class="tab-contents" id="selection-contents">
+          <div class="field">
+            <div class="control">
+              <label class="radio">
+                <input type="radio" name="method" value="roulette"
+                  {% if selection.method == "roulette" %}checked{% endif %}>
+                Roulette Wheel
+              </label>
+            </div>
+            <div class="level control">
+              <div class="level-left">
+                <label class="radio">
+                  <input type="radio" name="method" value="roulette_scaled"
+                    {% if selection.method == "roulette_scaled" %}checked{% endif %}>
+                  Roulette Wheel (linear scaled)
+                </label>
+              </div>
+              <div class="level-right">
+                <label class="label" for="selection-roulpressure">Pressure</label>
+                <input class="input" type="number" name="pressure" id="selection-roulpressure" min="0" step="0.01"
+                 value="{% if selection.parameters.pressure %}{{ selection.parameters.pressure }}{% else %}2.00{% endif %}"
+                {% if selection.method != "roulette_scaled" %}disabled{% endif %}>
+              </div>
+            </div>
+            <div class="control">
+              <label class="radio">
+                <input type="radio" name="method" value="stochiastic"
+                  {% if selection.method == "stochiastic" %}checked{% endif %}>
+                Stochiastic Universal Sampling
+              </label>
+            </div>
+            <div class="level control">
+              <div class="level-left">
+                <label class="radio">
+                  <input type="radio" name="method" value="rank"
+                    {% if selection.method == "rank" %}checked{% endif %}>
+                  Rank Selection
+                </label>
+              </div>
+              <div class="level-right">
+                <label class="label" for="selection-rankpressure">Pressure</label>
+                <input class="input" type="number" name="pressure" id="selection-rankpressure" min="0" step="0.01"
+                  value="{% if selection.parameters.pressure %}{{ selection.parameters.pressure }}{% else %}2.00{% endif %}"
+                  {% if selection.method != "rank" %}disabled{% endif %}>
+                <label class="label" for="selection-rankexp">Exponent</label>
+                <input class="input" type="number" name="exponent" id="selection-rankexp" min="0" step="0.01"
+                  value="{% if selection.parameters.exponent %}{{ selection.parameters.exponent }}{% else %}1.00{% endif %}"
+                  {% if selection.method != "rank" %}disabled{% endif %}>
+              </div>
+            </div>
+            <div class="level control">
+              <div class="level-left">
+                <label class="radio">
+                  <input type="radio" name="method" value="tournament"
+                    {% if selection.method == "tournament" %}checked{% endif %}>
+                  Tournament Selection
+                </label>
+              </div>
+              <div class="level-right">
+                <label class="label" for="selection-tsize">Size</label>
+                <input type="number" class="input" name="tSize" id="selection-tsize" min=0"
+                  value="{% if selection.parameters.tSize %}{{ selection.parameters.tSize }}{% else %}3{% endif %}"
+                  {% if selection.method != "tournament" %}disabled{% endif %}>
+              </div>
+            </div>
+            <div class="control">
+              <label class="radio">
+                <input type="radio" name="method" value="random"
+                  {% if selection.method == "random" %}checked{% endif %}>
+                Random Selection
+              </label>
+            </div>
+          </div>
+        </form>
+        <!-- Controls for Crossover -->
+        <div class="tab-contents is-sr-only" id="crossover-contents">
+          <div class="field">
+            <div class="control">
+            </div>
+          </div>
+        </div>
+        <!-- Controls for Replacement settings -->
+        <form class="tab-contents is-sr-only" id="replacement-contents">
+          <div class="field">
+            <div class="control">
+              <label class="radio">
+                <input type="radio" name="method" value="generational"
+                  {% if replacement.method == "generational" %}checked{% endif %}>
+                Generational
+              </label>
+            </div>
+            <div class="control">
+              <label class="radio">
+                <input type="radio" name="method" value="SSGAworse"
+                  {% if replacement.method == "SSGAworse" %}checked{% endif %}>
+                SSGA Worse
+              </label>
+            </div>
+            <div class="level">
+              <div class="control level-left">
+                <label class="radio">
+                  <input type="radio" name="method" value="SSGAdetTournament"
+                    {% if replacement.method == "SSGAdetTournament" %}checked{% endif %}>
+                  SSGA det. Tournament
+                </label>
+              </div>
+              <div class="control level-right">
+                <label class="label" for="replacement-tsize">Size</label>
+                <input type="number" name="tSize" id="replacement-tsize" min="0"
+                  value="{% if replacement.parameters.tSize %}{{ replacement.parameters.tSize }}{% else %}3{% endif %}"
+                  {% if replacement.method != "SSGAdetTournament" %}disabled{% endif %}>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <p>Mutation: {{ mutation }}</p>
+      <p>Crossover: {{ crossover }}</p>
+      <p>Stop Criteria: {{ stop_critera }}</p>
+    </section>
+    <script type="application/javascript" src="./index.js"></script>
+  </body>
+</html>
