@@ -60,16 +60,17 @@ class BiollanteRodan(RodanTask):
     ]
 
     def get_my_interface(self, inputs, settings):
+        self.logger.info(settings)
         context = {
             "base": json.loads(settings["@base"]),
-            "selction": json.loads(settings["@selection"]),
+            "selection": json.loads(settings["@selection"]),
             "replacement": json.loads(settings["@replacement"]),
             "mutation": json.loads(settings["@mutation"]),
             "crossover": json.loads(settings["@crossover"]),
             "stop_critera": json.loads(settings["@stop_criteria"]),
             "optimizer": settings["@optimizer"]
         }
-        return "TODO", context
+        return "index.html", context
 
     def validate_my_user_input(self, inputs, settings, user_input):
         assert settings["@state"] == STATE_NOT_OPTIMIZING, \
@@ -95,11 +96,11 @@ class BiollanteRodan(RodanTask):
             settings["@state"] = STATE_INIT
 
         if settings["@state"] == STATE_INIT:
-            self.logger.debug("State: Init")
+            self.logger.info("State: Init")
             # File must have xml extension because ???
             # Otherwise Gamera will raise an error.
             with NTF(suffix=".xml") as temp:
-                self.logger.debug(temp.name)
+                self.logger.info(temp.name)
                 shutil.copy2(
                     inputs["kNN Training Data"][0]["resource_path"],
                     temp.name
@@ -113,14 +114,16 @@ class BiollanteRodan(RodanTask):
             self.crossover = util.SerializableCrossover()
             self.stop_critera = util.SerializableStopCriteria()
 
+            settings["@state"] = STATE_NOT_OPTIMIZING
+
         if settings["@state"] == STATE_NOT_OPTIMIZING:
-            self.logger.debug("State: Not Optimizing")
+            self.logger.info("State: Not Optimizing")
             # Create set of parameters for template
             d = self.knnga_dict()
             d["@state"] = STATE_NOT_OPTIMIZING
             return self.WAITING_FOR_INPUT(d)
         elif settings["@state"] == STATE_OPTIMIZING:
-            self.logger.debug("State: Optimizing")
+            self.logger.info("State: Optimizing")
             # Wait for optimization to finish
             while self.optimizer.status:
                 sleep(30000)    # 30 seconds
@@ -128,7 +131,7 @@ class BiollanteRodan(RodanTask):
             settings["@state"] = STATE_NOT_OPTIMIZING
             return self.WAITING_FOR_INPUT()
         else:   # Finish
-            self.logger.debug("State: Finishing")
+            self.logger.info("State: Finishing")
             self.classifier.to_xml_filename(
                 outputs["GA Optimized Classifier"][0]["resource_path"]
             )
@@ -149,7 +152,7 @@ class BiollanteRodan(RodanTask):
         return {
             "@base": util.base_to_json(self.base),
             "@selection": self.selection.toJSON(),
-            "@replacemnt": self.replacement.toJSON(),
+            "@replacement": self.replacement.toJSON(),
             "@mutation": self.mutation.toJSON(),
             "@crossover": self.crossover.toJSON(),
             "@stop_criteria": self.stop_critera.toJSON(),
