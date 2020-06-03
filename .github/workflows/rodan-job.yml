@@ -23,6 +23,8 @@ jobs:
         # Checkout version used in Rodan
         git reset --hard c77194d5e839204efc617971233967ba5a6c53bc
         python setup.py install --nowx
+        cd ..
+        rm -rf gamera
     - name: Install flake8
       run: |
         python -m pip install --upgrade pip
