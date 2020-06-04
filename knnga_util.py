@@ -186,7 +186,7 @@ class SerializableMutation:
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def setBinaryMutation(self, rate=0.05, normalize=False):
+    def setBinaryMutation(self, rate=0.05, normalize=True):
         self.methods = [x for x in self.methods if x["method"] != "binary"]
         self.methods.append(
             {
