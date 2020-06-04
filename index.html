@@ -77,7 +77,7 @@
               <div class="level-left">
                 <label class="radio">
                   <input type="radio" name="method" value="roulette_scaled"
-                    {% if selection.method == "roulette_scaled" %}checked{% endif %}>
+                    {% if selection.method == "roulette_scaled" or not selection.method %}checked{% endif %}>
                   Roulette Wheel (linear scaled)
                 </label>
               </div>
@@ -85,7 +85,7 @@
                 <label class="label" for="selection-roulpressure">Pressure</label>
                 <input class="input" type="number" name="pressure" id="selection-roulpressure" min="0" step="0.01"
                  value="{% if selection.parameters.pressure %}{{ selection.parameters.pressure }}{% else %}2.00{% endif %}"
-                {% if selection.method != "roulette_scaled" %}disabled{% endif %}>
+                {% if selection.method != "roulette_scaled" and selection.method %}disabled{% endif %}>
               </div>
             </div>
             <div class="control">
@@ -156,13 +156,13 @@
             <div class="control level">
               <div class="level-left">
                 <label class="checkbox">
-                  <input type="checkbox" name="method" value="uniform">
+                  <input type="checkbox" name="method" value="uniform" checked>
                   Uniform
                 </label>
               </div>
               <div class="level-right">
                 <label class="label" for="crossover-preference">Preference</label>
-                <input type="number" class="input" name="preference" id="crossover-preference" min="0" max="1" value="0.50" step="0.01" disabled>
+                <input type="number" class="input" name="preference" id="crossover-preference" min="0" max="1" value="0.50" step="0.01">
               </div>
             </div>
             <div class="control level">
@@ -228,7 +228,7 @@
             </div>
             <div class="control">
               <label class="checkbox">
-                <input type="checkbox" name="method" value="swap">
+                <input type="checkbox" name="method" value="swap" checked>
                 Swap Mutation
               </label>
             </div>
@@ -241,13 +241,13 @@
             <div class="control level">
               <div class="level-left">
                 <label class="checkbox">
-                  <input type="checkbox" name="method" value="binary">
+                  <input type="checkbox" name="method" value="binary" checked>
                   Binary Mutation
                 </label>
               </div>
               <div class="level-right">
                 <label class="label" for="mutation-bin-rate">Rate</label>
-                <input type="number" class="input" name="rate" id="mutation-bin-rate" min="0" value="0.05" step="0.01" disabled>
+                <input type="number" class="input" name="rate" id="mutation-bin-rate" min="0" value="0.05" step="0.01">
               </div>
             </div>
             <div class="control level">
@@ -293,7 +293,7 @@
               <div class="control level-left">
                 <label class="radio">
                   <input type="radio" name="method" value="SSGAdetTournament"
-                    {% if replacement.method == "SSGAdetTournament" %}checked{% endif %}>
+                    {% if replacement.method == "SSGAdetTournament" or not replacement.method%}checked{% endif %}>
                   SSGA det. Tournament
                 </label>
               </div>
@@ -301,7 +301,7 @@
                 <label class="label" for="replacement-tsize">Size</label>
                 <input type="number" name="tSize" id="replacement-tsize" min="0"
                   value="{% if replacement.parameters.tSize %}{{ replacement.parameters.tSize }}{% else %}3{% endif %}"
-                  {% if replacement.method != "SSGAdetTournament" %}disabled{% endif %}>
+                  {% if replacement.method != "SSGAdetTournament" and replacement.method %}disabled{% endif %}>
               </div>
             </div>
           </div>
@@ -348,15 +348,15 @@
             <div class="level control">
               <div class="level-left">
                 <label class="checkbox">
-                  <input type="checkbox" name="method" value="steadyState">
+                  <input type="checkbox" name="method" value="steadyState" checked>
                   Steady State
                 </label>
               </div>
               <div class="level-right">
                 <label class="label" for="sc-min-gens">Min. Generations</label>
-                <input type="number" class="input" name="minGens" min="1" value="40" disabled>
+                <input type="number" class="input" name="minGens" min="1" value="40">
                 <label class="label" for="sc-no-change-gens">No Change Gens.</label>
-                <input type="number" class="input" name="noChangeGens" min="1" value="10" disabled>
+                <input type="number" class="input" name="noChangeGens" min="1" value="10">
               </div>
             </div>
           </div>
