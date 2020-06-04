@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2020 Juliette Regimbal
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 function handleTab (evt) {
     console.log(evt);
     let li = evt.target.parentElement;
