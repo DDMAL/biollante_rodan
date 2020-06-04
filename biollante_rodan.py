@@ -68,15 +68,14 @@ class BiollanteRodan(RodanTask):
             "mutation": json.loads(settings["@mutation"]),
             "crossover": json.loads(settings["@crossover"]),
             "stop_criteria": json.loads(settings["@stop_criteria"]),
-            "optimizer": settings["@optimizer"]
+            "optimizer": settings["@results"]
         }
         return "index.html", context
 
     def validate_my_user_input(self, inputs, settings, user_input):
-        self.logger.warn("HELLO USER INPUT")
-        self.logger.warn(str(user_input))
         assert settings["@state"] == STATE_NOT_OPTIMIZING, \
             "Must not be optimizing! State is %s" % str(settings["@state"])
+
         if user_input["method"] == "start":
             try:
                 self.setup_optimizer(user_input)
@@ -85,25 +84,33 @@ class BiollanteRodan(RodanTask):
 
             d = self.knnga_dict()
             d["@state"] = STATE_OPTIMIZING
+            d["@classifier"] = settings["@classifier"]
             return d
 
         elif user_input["method"] == "finish":
-            assert self.optimizer is not None, "Optimizer is unset!"
-            return {"@state": STATE_FINISHING}
+            return {"@state": STATE_FINISHING, "@classifier": settings["@classifier"]}
         else:
             self.logger.warn("Unknown method: %s" % user_input["method"])
             return {}
 
     def run_my_task(self, inputs, settings, outputs):
-        self.logger.warn("Optimizer is of type %s" % str(type(self.optimizer)))
         if "@state" not in settings:
             settings["@state"] = STATE_INIT
 
         if settings["@state"] == STATE_INIT:
             self.logger.info("State: Init")
-            # File must have xml extension because ???
-            # Otherwise Gamera will raise an error.
-            self.load_classifier(inputs)
+
+            with NTF(suffix=".xml") as temp:
+                self.logger.info(temp.name)
+                shutil.copy2(
+                    inputs["kNN Training Data"][0]["resource_path"],
+                    temp.name
+                )
+                self.classifier = knn.kNNNonInteractive(temp.name)
+
+            settings["@classifier"] = BiollanteRodan.classifier_to_string(
+                self.classifier
+            )
 
             self.base = knnga.GABaseSetting()
             self.selection = util.SerializableSelection()
@@ -116,16 +123,19 @@ class BiollanteRodan(RodanTask):
 
         if settings["@state"] == STATE_NOT_OPTIMIZING:
             self.logger.info("State: Not Optimizing")
+
             # Create set of parameters for template
             d = self.knnga_dict()
             d["@state"] = STATE_NOT_OPTIMIZING
+            d["@classifier"] = settings["@classifier"]
             return self.WAITING_FOR_INPUT(d)
+
         elif settings["@state"] == STATE_OPTIMIZING:
             self.logger.info("State: Optimizing")
             self.load_from_settings(settings)
 
             if self.classifier is None:
-                self.load_classifier(inputs)
+                self.load_classifier(settings["@classifier"])
 
             self.optimizer = knnga.GAOptimization(
                 self.classifier,
@@ -151,18 +161,17 @@ class BiollanteRodan(RodanTask):
             # Wait for optimization to finish
             while self.optimizer.status:
                 sleep(30000)    # 30 seconds
-            # Get info from optimizer
-            # settings["@state"] = STATE_NOT_OPTIMIZING
-            self.classifier.to_xml_filename(
-                outputs["GA Optimized Classifier"][0]["resource_path"]
-            )
-            return True
-            # return self.WAITING_FOR_INPUT()
+
+            # This is necessary since the classifier object isn't persistent
+            settings = self.knnga_dict()
+            settings["@clasifier"] = BiollanteRodan.classifier_to_string(self.classifier)
+            settings["@state"] = STATE_NOT_OPTIMIZING
+            return self.WAITING_FOR_INPUT(settings)
+
         else:   # Finish
             self.logger.info("State: Finishing")
-            self.classifier.to_xml_filename(
-                outputs["GA Optimized Classifier"][0]["resource_path"]
-            )
+            with open(outputs["GA Optimized Classifier"][0]["resource_path"], 'w') as f:
+                f.write(settings["@classifier"])
             return True
 
     def my_error_information(self, exc, traceback):
@@ -184,14 +193,13 @@ class BiollanteRodan(RodanTask):
             "@mutation": self.mutation.toJSON(),
             "@crossover": self.crossover.toJSON(),
             "@stop_criteria": self.stop_criteria.toJSON(),
-            "@optimizer": None if self.optimizer is None else {
+            "@results": None if self.optimizer is None else {
                 "generation": self.optimizer.generation,
                 "bestFitness": self.optimizer.bestFitness
             }
         }
 
     def load_from_settings(self, settings):
-        self.logger.info(settings)
         self.base = util.json_to_base(settings["@base"])
         self.selection = util.SerializableSelection \
             .fromJSON(settings["@selection"])
@@ -226,11 +234,20 @@ class BiollanteRodan(RodanTask):
             self.crossover, self.stop_criteria = base, selection,    \
             replacement, mutation, crossover, stop_criteria
 
-    def load_classifier(self, inputs):
+    @staticmethod
+    def classifier_to_string(classifier):
+        retval = None
+        with NTF() as f:
+            classifier.to_xml_filename(f.name)
+            f.flush()
+            f.seek(0)
+            retval = f.read()
+        return retval
+
+    def load_classifier(self, string):
+        self.logger.info(string)
         with NTF(suffix=".xml") as temp:
+            temp.write(string)
             self.logger.info(temp.name)
-            shutil.copy2(
-                inputs["kNN Training Data"][0]["resource_path"],
-                temp.name
-            )
+            temp.flush()
             self.classifier = knn.kNNNonInteractive(temp.name)

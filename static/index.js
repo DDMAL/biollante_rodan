@@ -212,3 +212,22 @@ $("#start-button").on("click", () => {
         }
     });
 });
+
+$("#finish-button").on("click", () => {
+    let obj = generateFullParams();
+    obj.method = "finish";
+    $.ajax({
+        contentType: "application/json",
+        data: JSON.stringify(obj),
+        error: (jqXHR, textStatus, error) => {
+            console.debug(textStatus);
+            console.debug(error);
+        },
+        method: "POST",
+        success: (data, textStatus, jqXHR) => {
+            console.debug("success");
+            console.debug(textStatus);
+            window.close();
+        }
+    });
+});
