@@ -72,6 +72,10 @@ class SerializableSelection():
     @staticmethod
     def fromJSON(jsonString):
         d = json.loads(jsonString)
+        return SerializableSelection.from_dict(d)
+
+    @staticmethod
+    def from_dict(d):
         p = d["parameters"]
         e = SerializableSelection()
 
@@ -147,6 +151,10 @@ class SerializableReplacement():
     @staticmethod
     def fromJSON(jsonString):
         d = json.loads(jsonString)
+        return SerializableReplacement.from_dict(d)
+
+    @staticmethod
+    def from_dict(d):
         e = SerializableReplacement()
         if d["method"] == "generational":
             e.setGenerationalReplacement()
@@ -248,6 +256,10 @@ class SerializableMutation:
     @staticmethod
     def fromJSON(jsonString):
         d = json.loads(jsonString)
+        return SerializableMutation.from_dict(d)
+
+    @staticmethod
+    def from_dict(d):
         e = SerializableMutation()
         for op in d:
             m = op["method"]
@@ -373,6 +385,10 @@ class SerializableCrossover:
     @staticmethod
     def fromJSON(jsonString):
         d = json.loads(jsonString)
+        return SerializableCrossover.from_dict(d)
+
+    @staticmethod
+    def from_dict(d):
         e = SerializableCrossover()
         for op in d:
             m = op["method"]
@@ -504,6 +520,10 @@ class SerializableStopCriteria:
     @staticmethod
     def fromJSON(jsonString):
         d = json.loads(jsonString)
+        return SerializableStopCrieteria.from_dict(d)
+
+    @staticmethod
+    def from_dict(d):
         e = SerializableStopCriteria()
         for op in d:
             m = op["method"]
