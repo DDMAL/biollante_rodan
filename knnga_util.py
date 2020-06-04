@@ -520,7 +520,7 @@ class SerializableStopCriteria:
     @staticmethod
     def fromJSON(jsonString):
         d = json.loads(jsonString)
-        return SerializableStopCrieteria.from_dict(d)
+        return SerializableStopCriteria.from_dict(d)
 
     @staticmethod
     def from_dict(d):
@@ -567,6 +567,10 @@ def base_to_json(setting):
 
 def json_to_base(jsonString):
     vals = json.loads(jsonString)
+    return dict_to_base(vals)
+
+
+def dict_to_base(vals):
     base = knnga.GABaseSetting()
     base.opMode = vals["opMode"]
     base.popSize = vals["popSize"]
