@@ -27,12 +27,6 @@ document.querySelectorAll(".tabs li").forEach(tab => {
     tab.addEventListener("click", handleTab);
 });
 
-function generateBase () {
-    let base = {};
-    $('#base-settings input').serializeArray().map(entry => { base[entry.name] = entry.value; });
-    return base;
-}
-
 function updateHelperDisabled (input) {
     let level = input.closest(".level");
     if (level) {
@@ -79,9 +73,28 @@ document.querySelectorAll("#stop-criteria-contents input[type='checkbox']").forE
         });
     });
 });
+
+function generateBase () {
+    let base = {};
+    $('#base-settings input').serializeArray().map(entry => {
+        if (Number.isNaN(Number(entry.value))) {
+            base[entry.name] = entry.value;
+        } else {
+            base[entry.name] = Number(entry.value);
+        }
+    });
+    return base;
+}
+
 function generateSelection () {
     let vals = {};
-    $('#selection-contents input').serializeArray().map(entry => { vals[entry.name] = entry.value; });
+    $('#selection-contents input').serializeArray().map(entry => {
+        if (!Number.isNaN(Number(entry.value))) {
+            vals[entry.name] = Number(entry.value);
+        } else {
+            vals[entry.name] = entry.value;
+        }
+    });
     let selection = {
         "method": vals["method"],
     };
@@ -195,6 +208,7 @@ $("#start-button").on("click", () => {
         success: (data, textStatus, jqXHR) => {
             console.debug("success");
             console.debug(textStatus);
+            window.close();
         }
     });
 });
