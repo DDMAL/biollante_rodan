@@ -88,7 +88,10 @@ class BiollanteRodan(RodanTask):
             return d
 
         elif user_input["method"] == "finish":
-            return {"@state": STATE_FINISHING, "@classifier": settings["@classifier"]}
+            return {
+                "@state": STATE_FINISHING,
+                "@classifier": settings["@classifier"]
+            }
         else:
             self.logger.warn("Unknown method: %s" % user_input["method"])
             return {}
@@ -148,8 +151,8 @@ class BiollanteRodan(RodanTask):
                 knnga.GAParallelization(True, 4)
             )
 
-            assert isinstance(self.optimizer, knnga.GAOptimization), "Optimizer is %s" % \
-                str(type(self.optimizer))
+            assert isinstance(self.optimizer, knnga.GAOptimization), \
+                "Optimizer is %s" % str(type(self.optimizer))
 
             try:
                 self.optimizer.startCalculation()
@@ -164,13 +167,17 @@ class BiollanteRodan(RodanTask):
 
             # This is necessary since the classifier object isn't persistent
             settings = self.knnga_dict()
-            settings["@clasifier"] = BiollanteRodan.classifier_to_string(self.classifier)
+            settings["@clasifier"] = BiollanteRodan.classifier_to_string(
+                self.classifier
+            )
             settings["@state"] = STATE_NOT_OPTIMIZING
             return self.WAITING_FOR_INPUT(settings)
 
         else:   # Finish
             self.logger.info("State: Finishing")
-            with open(outputs["GA Optimized Classifier"][0]["resource_path"], 'w') as f:
+            with open(
+                outputs["GA Optimized Classifier"][0]["resource_path"], 'w'
+            ) as f:
                 f.write(settings["@classifier"])
             return True
 
@@ -231,7 +238,7 @@ class BiollanteRodan(RodanTask):
         assert len(stop_criteria.methods) > 0, "No stop criteria"
 
         self.base, self.selection, self.replacement, self.mutation, \
-            self.crossover, self.stop_criteria = base, selection,    \
+            self.crossover, self.stop_criteria = base, selection,   \
             replacement, mutation, crossover, stop_criteria
 
     @staticmethod
