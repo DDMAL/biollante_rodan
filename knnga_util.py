@@ -200,13 +200,13 @@ class SerializableMutation:
         self.methods.sort()
         self.mutation.setBinaryMutation(rate, normalize)
 
-    def setGaussMutation(self, numberFeatures, minVal, maxVal, sigma, rate):
+    def setGaussMutation(self, numFeatures, minVal, maxVal, sigma, rate):
         self.methods = [x for x in self.methods if x["method"] != "gauss"]
         self.methods.append(
             {
                 "method": "gauss",
                 "parameters": {
-                    "numFeatures": numberFeatures,
+                    "numFeatures": numFeatures,
                     "min": minVal,
                     "max": maxVal,
                     "sigma": sigma,
@@ -215,7 +215,13 @@ class SerializableMutation:
             }
         )
         self.methods.sort()
-        self.mutation.setGaussMutation(numberFeatures, minVal, maxVal, sigma, rate)
+        self.mutation.setGaussMutation(
+            numFeatures,
+            minVal,
+            maxVal,
+            sigma,
+            rate
+        )
 
     def setInversionMutation(self):
         if not len([x for x in self.methods if x["method"] == "inversion"]):
@@ -395,10 +401,10 @@ class SerializableCrossover:
         for op in d:
             m = op["method"]
             p = op["parameters"]
-            num = num_features if num_features is not None \
-                else p["numFeatures"]
 
             if m == "hypercube":
+                num = num_features if num_features is not None \
+                    else p["numFeatures"]
                 if "alpha" in p:
                     e.setHypercubeCrossover(
                         num,
@@ -415,6 +421,8 @@ class SerializableCrossover:
             elif m == "nPoint":
                 e.setNPointCrossover(p["n"])
             elif m == "sbx":
+                num = num_features if num_features is not None \
+                    else p["numFeatures"]
                 if "eta" in p:
                     e.setSBXCrossover(
                         num,
@@ -429,6 +437,8 @@ class SerializableCrossover:
                         p["max"]
                     )
             elif m == "segment":
+                num = num_features if num_features is not None \
+                    else p["numFeatures"]
                 if "alpha" in p:
                     e.setSegmentCrossover(
                         num,
