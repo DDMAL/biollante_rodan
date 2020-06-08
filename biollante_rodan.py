@@ -78,9 +78,9 @@ class BiollanteRodan(RodanTask):
 
         if user_input["method"] == "start":
             try:
-                self.setup_optimizer(user_input)
-            except AssertionError as e:
-                return self.WAITING_FOR_INPUT({}, response=str(e))
+                self.setup_optimizer(user_input, settings["@num_features"])
+            except Exception as e:
+                raise self.ManualPhaseException(str(e))
 
             d = self.knnga_dict()
             d["@state"] = STATE_OPTIMIZING
@@ -114,6 +114,7 @@ class BiollanteRodan(RodanTask):
             settings["@classifier"] = BiollanteRodan.classifier_to_string(
                 self.classifier
             )
+            settings["@num_features"] = self.classifier.num_features
 
             self.base = knnga.GABaseSetting()
             self.selection = util.SerializableSelection()
@@ -164,6 +165,7 @@ class BiollanteRodan(RodanTask):
             # Wait for optimization to finish
             while self.optimizer.status:
                 sleep(30000)    # 30 seconds
+                self.logger.info(self.optimizer.monitorString)
 
             # This is necessary since the classifier object isn't persistent
             settings = self.knnga_dict()
@@ -219,15 +221,19 @@ class BiollanteRodan(RodanTask):
         self.stop_criteria = util.SerializableStopCriteria \
             .fromJSON(settings["@stop_criteria"])
 
-    def setup_optimizer(self, options):
+    def setup_optimizer(self, options, num_features):
+        assert num_features is not None, "NUM FEATURES"
         base = util.dict_to_base(options["base"])
         selection = util.SerializableSelection \
             .from_dict(options["selection"])
         replacement = util.SerializableReplacement \
             .from_dict(options["replacement"])
-        mutation = util.SerializableMutation.from_dict(options["mutation"])
+        mutation = util.SerializableMutation.from_dict(
+            options["mutation"],
+            num_features
+        )
         crossover = util.SerializableCrossover \
-            .from_dict(options["crossover"])
+            .from_dict(options["crossover"], num_features)
         stop_criteria = util.SerializableStopCriteria \
             .from_dict(options["stop_criteria"])
 
@@ -252,7 +258,6 @@ class BiollanteRodan(RodanTask):
         return retval
 
     def load_classifier(self, string):
-        self.logger.info(string)
         with NTF(suffix=".xml") as temp:
             temp.write(string)
             self.logger.info(temp.name)

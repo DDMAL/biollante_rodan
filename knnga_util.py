@@ -200,22 +200,22 @@ class SerializableMutation:
         self.methods.sort()
         self.mutation.setBinaryMutation(rate, normalize)
 
-    def setGaussMutation(self, numberFeatures, min, max, sigma, rate):
+    def setGaussMutation(self, numberFeatures, minVal, maxVal, sigma, rate):
         self.methods = [x for x in self.methods if x["method"] != "gauss"]
         self.methods.append(
             {
                 "method": "gauss",
                 "parameters": {
-                    "numberFeatures": numberFeatures,
-                    "min": min,
-                    "max": max,
+                    "numFeatures": numberFeatures,
+                    "min": minVal,
+                    "max": maxVal,
                     "sigma": sigma,
                     "rate": rate
                 }
             }
         )
         self.methods.sort()
-        self.mutation.setGaussMutation(numberFeatures, min, max, sigma, rate)
+        self.mutation.setGaussMutation(numberFeatures, minVal, maxVal, sigma, rate)
 
     def setInversionMutation(self):
         if not len([x for x in self.methods if x["method"] == "inversion"]):
@@ -259,7 +259,7 @@ class SerializableMutation:
         return SerializableMutation.from_dict(d)
 
     @staticmethod
-    def from_dict(d):
+    def from_dict(d, num_features=None):
         e = SerializableMutation()
         for op in d:
             m = op["method"]
@@ -275,8 +275,10 @@ class SerializableMutation:
                 else:
                     e.setBinaryMutation
             elif m == "gauss":
+                num = num_features if num_features is not None \
+                    else p["numFeatures"]
                 e.setGaussMutation(
-                    p["numberFeatures"],
+                    num,
                     p["min"],
                     p["max"],
                     p["sigma"],
@@ -388,23 +390,25 @@ class SerializableCrossover:
         return SerializableCrossover.from_dict(d)
 
     @staticmethod
-    def from_dict(d):
+    def from_dict(d, num_features=None):
         e = SerializableCrossover()
         for op in d:
             m = op["method"]
             p = op["parameters"]
+            num = num_features if num_features is not None \
+                else p["numFeatures"]
 
             if m == "hypercube":
                 if "alpha" in p:
                     e.setHypercubeCrossover(
-                        p["numFeatures"],
+                        num,
                         p["min"],
                         p["max"],
                         p["alpha"]
                     )
                 else:
                     e.setHypercubeCrossover(
-                        p["numFeatures"],
+                        num,
                         p["min"],
                         p["max"]
                     )
@@ -413,28 +417,28 @@ class SerializableCrossover:
             elif m == "sbx":
                 if "eta" in p:
                     e.setSBXCrossover(
-                        p["numFeatures"],
+                        num,
                         p["min"],
                         p["max"],
                         p["eta"]
                     )
                 else:
                     e.setSBXCrossover(
-                        p["numFeatures"],
+                        num,
                         p["min"],
                         p["max"]
                     )
             elif m == "segment":
                 if "alpha" in p:
                     e.setSegmentCrossover(
-                        p["numFeatures"],
+                        num,
                         p["min"],
                         p["max"],
                         p["alpha"]
                     )
                 else:
                     e.setSegmentCrossover(
-                        p["numFeatures"],
+                        num,
                         p["min"],
                         p["max"]
                     )
