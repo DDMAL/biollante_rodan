@@ -10,7 +10,9 @@
     <section class="section">
       <div class="container">
         {% if optimizer %}
-        <p>{{ optimizer }}</p>
+        <h2 class="subtitle">Latest Optimizer Results</h2>
+        <p>Last Generation: {{ optimizer.generation }}</p>
+        <p>Best Result: {{ optimizer.bestFitness }}</p>
         {% else %}
         <p>No previous optimizer results.</p>
         {% endif %}
@@ -168,7 +170,7 @@
             <div class="control level">
               <div class="level-left">
                 <label class="checkbox">
-                  <input type="checkbox" name="method" value="sbx">
+                  <input class="weighting-only" type="checkbox" name="method" value="sbx">
                   SBX Crossover
                 </label>
               </div>
@@ -184,7 +186,7 @@
             <div class="control level">
               <div class="level-left">
                 <label class="checkbox">
-                  <input type="checkbox" name="method" value="segment">
+                  <input class="weighting-only" type="checkbox" name="method" value="segment">
                   Segment
                 </label>
               </div>
@@ -200,7 +202,7 @@
             <div class="control level">
               <div class="level-left">
                 <label class="checkbox">
-                  <input type="checkbox" name="method" value="hypercube">
+                  <input class="weighting-only" type="checkbox" name="method" value="hypercube">
                   Hypercube
                 </label>
               </div>
@@ -239,7 +241,7 @@
             <div class="control level">
               <div class="level-left">
                 <label class="checkbox">
-                  <input type="checkbox" name="method" value="binary" checked>
+                  <input class="selection-only" type="checkbox" name="method" value="binary" checked>
                   Binary Mutation
                 </label>
               </div>
@@ -251,7 +253,7 @@
             <div class="control level">
               <div class="level-left">
                 <label class="checkbox">
-                  <input type="checkbox" name="method" value="gauss">
+                  <input class="weighting-only" type="checkbox" name="method" value="gauss">
                   Gauss Mutation
                 </label>
               </div>
