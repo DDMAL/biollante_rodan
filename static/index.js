@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+// Adjust option visibility based on selected tab
 function handleTab (evt) {
     console.log(evt);
     let li = evt.target.parentElement;
@@ -32,6 +33,7 @@ document.querySelectorAll(".tabs li").forEach(tab => {
     tab.addEventListener("click", handleTab);
 });
 
+// Enable/disable additional parameters based on if an option is selected
 function updateHelperDisabled (input) {
     let level = input.closest(".level");
     if (level) {
@@ -79,6 +81,7 @@ document.querySelectorAll("#stop-criteria-contents input[type='checkbox']").forE
     });
 });
 
+// Following functions create JSON with options chosen
 function generateBase () {
     let base = {};
     $('#base-settings input').serializeArray().map(entry => {
