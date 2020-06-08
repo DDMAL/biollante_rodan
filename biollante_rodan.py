@@ -76,6 +76,7 @@ class BiollanteRodan(RodanTask):
         assert settings["@state"] == STATE_NOT_OPTIMIZING, \
             "Must not be optimizing! State is %s" % str(settings["@state"])
 
+        # Start the optimization process
         if user_input["method"] == "start":
             try:
                 self.setup_optimizer(user_input, settings["@num_features"])
@@ -87,6 +88,7 @@ class BiollanteRodan(RodanTask):
             d["@classifier"] = settings["@classifier"]
             return d
 
+        # Save the latest classifier version and finsh job.
         elif user_input["method"] == "finish":
             return {
                 "@state": STATE_FINISHING,
@@ -105,6 +107,7 @@ class BiollanteRodan(RodanTask):
 
             with NTF(suffix=".xml") as temp:
                 self.logger.info(temp.name)
+                # Gamera fails to load files without xml extension.
                 shutil.copy2(
                     inputs["kNN Training Data"][0]["resource_path"],
                     temp.name
@@ -114,6 +117,8 @@ class BiollanteRodan(RodanTask):
             settings["@classifier"] = BiollanteRodan.classifier_to_string(
                 self.classifier
             )
+            # Preserve the number of features for certain kinds
+            # of operations the GA optimizer might perform.
             settings["@num_features"] = self.classifier.num_features
 
             self.base = knnga.GABaseSetting()
@@ -195,6 +200,10 @@ class BiollanteRodan(RodanTask):
         raise NotImplementedError
 
     def knnga_dict(self):
+        """
+        Return a dictionary object with serializations
+        of settings objects and a result summary (if any).
+        """
         return {
             "@base": util.base_to_json(self.base),
             "@selection": self.selection.toJSON(),
@@ -210,32 +219,45 @@ class BiollanteRodan(RodanTask):
 
     def load_from_settings(self, settings):
         self.base = util.json_to_base(settings["@base"])
-        self.selection = util.SerializableSelection \
-            .fromJSON(settings["@selection"])
-        self.replacement = util.SerializableReplacement \
-            .fromJSON(settings["@replacement"])
-        self.mutation = util.SerializableMutation \
-            .fromJSON(settings["@mutation"])
-        self.crossover = util.SerializableCrossover \
-            .fromJSON(settings["@crossover"])
-        self.stop_criteria = util.SerializableStopCriteria \
-            .fromJSON(settings["@stop_criteria"])
+        self.selection = util.SerializableSelection.fromJSON(
+            settings["@selection"]
+        )
+        self.replacement = util.SerializableReplacement.fromJSON(
+            settings["@replacement"]
+        )
+        self.mutation = util.SerializableMutation.fromJSON(
+            settings["@mutation"]
+        )
+        self.crossover = util.SerializableCrossover.fromJSON(
+            settings["@crossover"]
+        )
+        self.stop_criteria = util.SerializableStopCriteria.fromJSON(
+            settings["@stop_criteria"]
+        )
 
     def setup_optimizer(self, options, num_features):
+        """
+        Ensure we have the info necessary to run GA optimization.
+        """
         assert num_features is not None, "NUM FEATURES"
         base = util.dict_to_base(options["base"])
-        selection = util.SerializableSelection \
-            .from_dict(options["selection"])
-        replacement = util.SerializableReplacement \
-            .from_dict(options["replacement"])
+        selection = util.SerializableSelection.from_dict(
+            options["selection"]
+        )
+        replacement = util.SerializableReplacement.from_dict(
+            options["replacement"]
+        )
         mutation = util.SerializableMutation.from_dict(
             options["mutation"],
             num_features
         )
-        crossover = util.SerializableCrossover \
-            .from_dict(options["crossover"], num_features)
-        stop_criteria = util.SerializableStopCriteria \
-            .from_dict(options["stop_criteria"])
+        crossover = util.SerializableCrossover.from_dict(
+            options["crossover"],
+            num_features
+        )
+        stop_criteria = util.SerializableStopCriteria.from_dict(
+            options["stop_criteria"]
+        )
 
         assert selection.method is not None, "No selection method"
         assert replacement.method is not None, "No replacement method"
