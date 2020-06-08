@@ -115,7 +115,7 @@ class TestMutation(unittest.TestCase):
             }, {
                 "method": "gauss",
                 "parameters": {
-                    "numberFeatures": 30,
+                    "numFeatures": 30,
                     "min": 0.0,
                     "max": 1.0,
                     "sigma": 0.5,
