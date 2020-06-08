@@ -204,7 +204,7 @@ class BiollanteRodan(RodanTask):
             "@stop_criteria": self.stop_criteria.toJSON(),
             "@results": None if self.optimizer is None else {
                 "generation": self.optimizer.generation,
-                "bestFitness": self.optimizer.bestFitness
+                "bestFitness": self.optimizer.bestFitness,
             }
         }
 
