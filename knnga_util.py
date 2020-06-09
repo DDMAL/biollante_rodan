@@ -7,6 +7,9 @@ from gamera import knnga
 import json
 
 
+# All default values are taken from the
+# corresponding Gamera functions.
+
 class SerializableSelection():
     """
     Extension of gamera.knnga.GASelection that provides
