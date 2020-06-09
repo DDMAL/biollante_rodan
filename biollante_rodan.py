@@ -31,7 +31,6 @@ class BiollanteRodan(RodanTask):
     category = "Optimization"
     interactive = True
 
-    classifier = None
     base = None
     selection = None
     replacement = None
@@ -85,14 +84,14 @@ class BiollanteRodan(RodanTask):
 
             d = self.knnga_dict()
             d["@state"] = STATE_OPTIMIZING
-            d["@classifier"] = settings["@classifier"]
+            d["@settings"] = settings["@settings"]
             return d
 
         # Save the latest classifier version and finsh job.
         elif user_input["method"] == "finish":
             return {
                 "@state": STATE_FINISHING,
-                "@classifier": settings["@classifier"]
+                "@settings": settings["@settings"]
             }
         else:
             self.logger.warn("Unknown method: %s" % user_input["method"])
@@ -112,14 +111,17 @@ class BiollanteRodan(RodanTask):
                     inputs["kNN Training Data"][0]["resource_path"],
                     temp.name
                 )
-                self.classifier = knn.kNNNonInteractive(temp.name)
+                classifier = knn.kNNNonInteractive(temp.name)
 
-            settings["@classifier"] = BiollanteRodan.classifier_to_string(
-                self.classifier
-            )
+            with NTF() as temp:
+                classifier.save_settings(temp.name)
+                temp.flush()
+                temp.seek(0)
+                settings["@settings"] = temp.read()
+
             # Preserve the number of features for certain kinds
             # of operations the GA optimizer might perform.
-            settings["@num_features"] = self.classifier.num_features
+            settings["@num_features"] = classifier.num_features
 
             self.base = knnga.GABaseSetting()
             self.selection = util.SerializableSelection()
@@ -136,18 +138,29 @@ class BiollanteRodan(RodanTask):
             # Create set of parameters for template
             d = self.knnga_dict()
             d["@state"] = STATE_NOT_OPTIMIZING
-            d["@classifier"] = settings["@classifier"]
+            d["@settings"] = settings["@settings"]
             return self.WAITING_FOR_INPUT(d)
 
         elif settings["@state"] == STATE_OPTIMIZING:
             self.logger.info("State: Optimizing")
             self.load_from_settings(settings)
 
-            if self.classifier is None:
-                self.load_classifier(settings["@classifier"])
+            # Load data
+            with NTF(suffix=".xml") as temp:
+                shutil.copy2(
+                    inputs["kNN Training Data"][0]["resource_path"],
+                    temp.name
+                )
+                classifier = knn.kNNNonInteractive(temp.name)
+
+            # Load selection and weights
+            with NTF(suffix=".xml") as temp:
+                temp.write(settings["@settings"])
+                temp.flush()
+                classifier.load_settings(temp.name)
 
             self.optimizer = knnga.GAOptimization(
-                self.classifier,
+                classifier,
                 self.base,
                 self.selection.selection,
                 self.crossover.crossover,
@@ -174,9 +187,13 @@ class BiollanteRodan(RodanTask):
 
             # This is necessary since the classifier object isn't persistent
             settings = self.knnga_dict()
-            settings["@clasifier"] = BiollanteRodan.classifier_to_string(
-                self.classifier
-            )
+
+            with NTF() as temp:
+                classifier.save_settings(temp.name)
+                temp.flush()
+                temp.seek(0)
+                settings["@settings"] = temp.read()
+
             settings["@state"] = STATE_NOT_OPTIMIZING
             return self.WAITING_FOR_INPUT(settings)
 
@@ -185,7 +202,7 @@ class BiollanteRodan(RodanTask):
             with open(
                 outputs["GA Optimized Classifier"][0]["resource_path"], 'w'
             ) as f:
-                f.write(settings["@classifier"])
+                f.write(settings["@settings"])
             return True
 
     def my_error_information(self, exc, traceback):
@@ -268,20 +285,3 @@ class BiollanteRodan(RodanTask):
         self.base, self.selection, self.replacement, self.mutation, \
             self.crossover, self.stop_criteria = base, selection,   \
             replacement, mutation, crossover, stop_criteria
-
-    @staticmethod
-    def classifier_to_string(classifier):
-        retval = None
-        with NTF() as f:
-            classifier.to_xml_filename(f.name)
-            f.flush()
-            f.seek(0)
-            retval = f.read()
-        return retval
-
-    def load_classifier(self, string):
-        with NTF(suffix=".xml") as temp:
-            temp.write(string)
-            self.logger.info(temp.name)
-            temp.flush()
-            self.classifier = knn.kNNNonInteractive(temp.name)
