@@ -119,7 +119,7 @@ class SerializableReplacement():
         if isinstance(other, self.__class__):
             a = self.__dict__.copy()
             del a['replacement']
-            b = self.__dict__.copy()
+            b = other.__dict__.copy()
             del b['replacement']
             return a == b
         else:
