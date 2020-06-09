@@ -22,7 +22,7 @@ class SerializableSelection():
         if isinstance(other, self.__class__):
             a = self.__dict__.copy()
             del a['selection']
-            b = self.__dict__.copy()
+            b = other.__dict__.copy()
             del b['selection']
             return a == b
         else:
