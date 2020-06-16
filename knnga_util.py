@@ -9,6 +9,19 @@ import json
 
 # All default values are taken from the
 # corresponding Gamera functions.
+DEFAULT_PRESSURE = 2.0
+DEFAULT_EXPONENT = 1.0
+DEFAULT_TSIZE = 3
+DEFAULT_RATE = 0.05
+DEFAULT_ALPHA = 0.0
+DEFAULT_ETA = 1.0
+DEFAULT_PREFERENCE = 0.5
+DEFAULT_OPTIMUM = 1.0
+DEFAULT_EVAL_N = 5000
+DEFAULT_GEN_N = 100
+DEFAULT_MIN_GEN = 40
+DEFAULT_NO_CHANGE_GEN = 10
+
 
 class SerializableSelection():
     """
@@ -39,7 +52,11 @@ class SerializableSelection():
         self.parameters = {}
         self.selection.setRandomSelection()
 
-    def setRankSelection(self, pressure=2.0, exponent=1.0):
+    def setRankSelection(
+        self,
+        pressure=DEFAULT_PRESSURE,
+        exponent=DEFAULT_EXPONENT
+    ):
         self.method = "rank"
         self.parameters = {
             "pressure": pressure,
@@ -52,7 +69,7 @@ class SerializableSelection():
         self.parameters = {}
         self.selection.setRoulettWheel()
 
-    def setRouletteWheelScaled(self, pressure=2.0):
+    def setRouletteWheelScaled(self, pressure=DEFAULT_PRESSURE):
         self.method = "roulette_scaled"
         self.parameters = {"pressure": pressure}
         self.selection.setRoulettWheelScaled(pressure)
@@ -62,7 +79,7 @@ class SerializableSelection():
         self.parameters = {}
         self.selection.setStochUniSampling()
 
-    def setTournamentSelection(self, tSize=3):
+    def setTournamentSelection(self, tSize=DEFAULT_TSIZE):
         self.method = "tournament"
         self.parameters = {"tSize": tSize}
         self.selection.setTournamentSelection(tSize)
@@ -113,6 +130,7 @@ class SerializableReplacement():
     Extension of gamera.knnga.GAReplacement that provides
     access to selection method and parameters.
     """
+
     def __init__(self):
         self.method = None
         self.parameters = {}
@@ -136,7 +154,7 @@ class SerializableReplacement():
         self.parameters = {}
         self.replacement.setGenerationalReplacement()
 
-    def setSSGAdetTournament(self, tSize=3):
+    def setSSGAdetTournament(self, tSize=DEFAULT_TSIZE):
         self.method = "SSGAdetTournament"
         self.parameters = {"tSize": tSize}
         self.replacement.setSSGAdetTournament(tSize)
@@ -176,6 +194,7 @@ class SerializableMutation:
     Extension of gamera.knnga.GAMutation that provides
     access to mutation methods and parameters
     """
+
     def __init__(self):
         self.methods = []
         self.mutation = knnga.GAMutation()
@@ -189,7 +208,7 @@ class SerializableMutation:
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def setBinaryMutation(self, rate=0.05, normalize=True):
+    def setBinaryMutation(self, rate=DEFAULT_RATE, normalize=True):
         self.methods = [x for x in self.methods if x["method"] != "binary"]
         self.methods.append(
             {
@@ -307,6 +326,7 @@ class SerializableCrossover:
     """
     Serializable version of gamera.knnga.GACrossover.
     """
+
     def __init__(self):
         self.methods = []
         self.crossover = knnga.GACrossover()
@@ -320,7 +340,13 @@ class SerializableCrossover:
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def setHypercubeCrossover(self, numFeatures, min, max, alpha=0.0):
+    def setHypercubeCrossover(
+        self,
+        numFeatures,
+        min,
+        max,
+        alpha=DEFAULT_ALPHA
+    ):
         self.methods = [x for x in self.methods if x["method"] != "hypercube"]
         self.methods.append(
             {
@@ -347,7 +373,7 @@ class SerializableCrossover:
         self.methods.sort()
         self.crossover.setNPointCrossover(n)
 
-    def setSBXCrossover(self, numFeatures, min, max, eta=1.0):
+    def setSBXCrossover(self, numFeatures, min, max, eta=DEFAULT_ETA):
         self.methods = [x for x in self.methods if x["method"] != "sbx"]
         self.methods.append(
             {
@@ -363,7 +389,7 @@ class SerializableCrossover:
         self.methods.sort()
         self.crossover.setSBXcrossover(numFeatures, min, max, eta)
 
-    def setSegmentCrossover(self, numFeatures, min, max, alpha=0.0):
+    def setSegmentCrossover(self, numFeatures, min, max, alpha=DEFAULT_ALPHA):
         self.methods = [x for x in self.methods if x["method"] != "segment"]
         self.methods.append(
             {
@@ -379,7 +405,7 @@ class SerializableCrossover:
         self.methods.sort()
         self.crossover.setSegmentCrossover(numFeatures, min, max, alpha)
 
-    def setUniformCrossover(self, preference=0.5):
+    def setUniformCrossover(self, preference=DEFAULT_PREFERENCE):
         self.methods = [x for x in self.methods if x["method"] != "uniform"]
         self.methods.append(
             {
@@ -467,6 +493,7 @@ class SerializableStopCriteria:
     """
     Serializable version of gamera.knnga.GAStopCriteria
     """
+
     def __init__(self):
         self.methods = []
         self.sc = knnga.GAStopCriteria()
@@ -480,7 +507,7 @@ class SerializableStopCriteria:
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def setBestFitnessStop(self, optimum=1.0):
+    def setBestFitnessStop(self, optimum=DEFAULT_OPTIMUM):
         self.methods = [x for x in self.methods
                         if x["method"] != "bestFitness"]
         self.methods.append(
@@ -492,7 +519,7 @@ class SerializableStopCriteria:
         self.methods.sort()
         self.sc.setBestFitnessStop(optimum)
 
-    def setMaxFitnessEvals(self, n=5000):
+    def setMaxFitnessEvals(self, n=DEFAULT_EVAL_N):
         self.methods = [x for x in self.methods
                         if x["method"] != "maxFitnessEvals"]
         self.methods.append(
@@ -504,7 +531,7 @@ class SerializableStopCriteria:
         self.methods.sort()
         self.sc.setMaxFitnessEvals(n)
 
-    def setMaxGenerations(self, n=100):
+    def setMaxGenerations(self, n=DEFAULT_GEN_N):
         self.methods = [x for x in self.methods
                         if x["method"] != "maxGenerations"]
         self.methods.append(
@@ -516,7 +543,11 @@ class SerializableStopCriteria:
         self.methods.sort()
         self.sc.setMaxGenerations(n)
 
-    def setSteadyStateStop(self, minGens=40, noChangeGens=10):
+    def setSteadyStateStop(
+        self,
+        minGens=DEFAULT_MIN_GEN,
+        noChangeGens=DEFAULT_NO_CHANGE_GEN
+    ):
         self.methods = [x for x in self.methods
                         if x["method"] != "steadyState"]
         self.methods.append(
