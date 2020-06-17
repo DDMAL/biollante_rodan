@@ -7,7 +7,7 @@
 function handleTab (evt) {
     console.log(evt);
     let li = evt.target.parentElement;
-    document.querySelector(".tabs li.is-active").classList.remove("is-active");
+    document.querySelector("#settings-tabs li.is-active").classList.remove("is-active");
     li.classList.add("is-active");
     document.querySelectorAll(".tab-contents").forEach(el => { el.classList.add("is-sr-only"); });
     switch (li.id) {
@@ -29,8 +29,24 @@ function handleTab (evt) {
     }
 }
 
-document.querySelectorAll(".tabs li").forEach(tab => {
+document.querySelectorAll("#settings-tabs li").forEach(tab => {
     tab.addEventListener("click", handleTab);
+});
+
+function sectionTab (evt) {
+    let li = evt.target.parentElement;
+    document.querySelector("#opts-tabs li.is-active").classList.remove("is-active");
+    li.classList.add("is-active");
+    document.querySelectorAll(".sec-tab").forEach(tab => { tab.classList.add("is-sr-only"); });
+    if (li.id === "setting-tab") {
+        document.getElementById("settings").classList.remove("is-sr-only");
+    } else if (li.id === "weight-tab") {
+        document.getElementById("weights").classList.remove("is-sr-only");
+    }
+}
+
+document.querySelectorAll("#opts-tabs li").forEach(tab => {
+    tab.addEventListener("click", sectionTab);
 });
 
 // Enable/disable additional parameters based on if an option is selected
