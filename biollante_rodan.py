@@ -215,12 +215,50 @@ class BiollanteRodan(RodanTask):
         raise NotImplementedError
 
     def test_my_task(self, testcase):
-        # inputs = {}
-        # outputs = {}
-        # self.run_my_task(inputs, {}, outputs)
-        # result = outputs['out'][0]['resource_path']
-        # testcase.assertEqual(result, 'what you expect it to test')
-        raise NotImplementedError
+        with NTA() as outfile:
+            inputs = {
+                "kNN Training Data": [
+                    {
+                        "resource_path": os.path.abspath(
+                            "./test_resources/Dalhousie_TD_421_422_NC-based_" +
+                            "classifier.xml"
+                        )
+                    }
+                ]
+            }
+            outputs = {
+                "GA Optimized Classifier": [
+                    {"resource_path": outfile.name}
+                ]
+            }
+
+            # Test initial run
+            result = self.run_my_task(inputs, {}, outputs)
+            testcase.assertTrue(
+                isinstance(result, self.WAITING_FOR_INPUT)
+            )
+            testcase.assertEqual(
+                result.update_settings["@state"],
+                STATE_NOT_OPTIMIZING
+            )
+
+            # Start without enough GA optimizer settings
+            with testcase.assertRaises(self.ManualPhaseException):
+                self.validate_my_user_input(
+                    inputs,
+                    {"@state": STATE_OPTIMIZING, "@num_features": 42},
+                    {"method": "start"}
+                )
+
+            # Try to write in finish step
+            settings = {
+                "@state": STATE_FINISHING,
+                "@settings": "Hello, Test!"
+            }
+            testcase.assertTrue(self.run_my_task(inputs, settings, outputs))
+            outfile.seek(0)
+            contents = outfile.read()
+            testcase.assertEqual(contents, "Hello, Test!")
 
     def knnga_dict(self):
         """
