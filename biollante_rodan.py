@@ -43,7 +43,7 @@ class BiollanteRodan(RodanTask):
 
     input_port_types = [
         {
-            "name": "kNN Training Data",
+            "name": "Classifier Data",
             "minimum": 1,
             "maximum": 1,
             "resource_types": ["application/gamera+xml"]
@@ -51,7 +51,7 @@ class BiollanteRodan(RodanTask):
     ]
     output_port_types = [
         {
-            "name": "GA Optimized Classifier",
+            "name": "Feature Weights/Selection",
             "minimum": 1,
             "maximum": 1,
             "resource_types": ["application/gamera+xml"]
@@ -109,7 +109,7 @@ class BiollanteRodan(RodanTask):
                 self.logger.info(temp.name)
                 # Gamera fails to load files without xml extension.
                 shutil.copy2(
-                    inputs["kNN Training Data"][0]["resource_path"],
+                    inputs["Classifier Data"][0]["resource_path"],
                     temp.name
                 )
                 classifier = knn.kNNNonInteractive(temp.name)
@@ -151,7 +151,7 @@ class BiollanteRodan(RodanTask):
             # Load data
             with NTF(suffix=".xml") as temp:
                 shutil.copy2(
-                    inputs["kNN Training Data"][0]["resource_path"],
+                    inputs["Classifier Data"][0]["resource_path"],
                     temp.name
                 )
                 classifier = knn.kNNNonInteractive(temp.name)
@@ -205,7 +205,7 @@ class BiollanteRodan(RodanTask):
         else:   # Finish
             self.logger.info("State: Finishing")
             with open(
-                outputs["GA Optimized Classifier"][0]["resource_path"], 'w'
+                outputs["Feature Weights/Selection"][0]["resource_path"], 'w'
             ) as f:
                 f.write(settings["@settings"])
             return True
