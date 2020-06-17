@@ -67,7 +67,8 @@ class BiollanteRodan(RodanTask):
             "mutation": json.loads(settings["@mutation"]),
             "crossover": json.loads(settings["@crossover"]),
             "stop_criteria": json.loads(settings["@stop_criteria"]),
-            "optimizer": settings["@results"]
+            "optimizer": settings["@results"],
+            "weights": settings["@weights"],
         }
         return "index.html", context
 
@@ -119,9 +120,10 @@ class BiollanteRodan(RodanTask):
                 temp.seek(0)
                 settings["@settings"] = temp.read()
 
-            # Preserve the number of features for certain kinds
-            # of operations the GA optimizer might perform.
+            # Preserve the number of features and weights for
+            # certain kinds of operations the GA optimizer might perform.
             settings["@num_features"] = classifier.num_features
+            settings["@weights"] = classifier.get_weights_by_features()
 
             self.base = knnga.GABaseSetting()
             self.selection = util.SerializableSelection()
@@ -139,6 +141,7 @@ class BiollanteRodan(RodanTask):
             d = self.knnga_dict()
             d["@state"] = STATE_NOT_OPTIMIZING
             d["@settings"] = settings["@settings"]
+            d["@weights"] = settings["@weights"]
             return self.WAITING_FOR_INPUT(d)
 
         elif settings["@state"] == STATE_OPTIMIZING:
@@ -194,7 +197,9 @@ class BiollanteRodan(RodanTask):
                 temp.seek(0)
                 settings["@settings"] = temp.read()
 
+            self.logger.info(classifier.get_weights_by_features())
             settings["@state"] = STATE_NOT_OPTIMIZING
+            settings["@weights"] = classifier.get_weights_by_features()
             return self.WAITING_FOR_INPUT(settings)
 
         else:   # Finish
