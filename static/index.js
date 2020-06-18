@@ -6,11 +6,11 @@
 // Adjust option visibility based on selected tab
 function handleTab (evt) {
     console.log(evt);
-    let li = evt.target.parentElement;
+    let tabLabel = evt.target.parentElement;
     document.querySelector("#settings-tabs li.is-active").classList.remove("is-active");
-    li.classList.add("is-active");
+    tabLabel.classList.add("is-active");
     document.querySelectorAll(".tab-contents").forEach(el => { el.classList.add("is-sr-only"); });
-    switch (li.id) {
+    switch (tabLabel.id) {
         case "tab-selection":
             document.getElementById("selection-contents").classList.remove("is-sr-only");
             break;
@@ -34,13 +34,13 @@ document.querySelectorAll("#settings-tabs li").forEach(tab => {
 });
 
 function sectionTab (evt) {
-    let li = evt.target.parentElement;
+    let tabLabel = evt.target.parentElement;
     document.querySelector("#opts-tabs li.is-active").classList.remove("is-active");
-    li.classList.add("is-active");
+    tabLabel.classList.add("is-active");
     document.querySelectorAll(".sec-tab").forEach(tab => { tab.classList.add("is-sr-only"); });
-    if (li.id === "setting-tab") {
+    if (tabLabel.id === "setting-tab") {
         document.getElementById("settings").classList.remove("is-sr-only");
-    } else if (li.id === "weight-tab") {
+    } else if (tabLabel.id === "weight-tab") {
         document.getElementById("weights").classList.remove("is-sr-only");
     }
 }

@@ -122,6 +122,7 @@ class BiollanteRodan(RodanTask):
 
             # Preserve the number of features and weights for
             # certain kinds of operations the GA optimizer might perform.
+            # (e.g., Gauss mutation)
             settings["@num_features"] = classifier.num_features
             settings["@weights"] = classifier.get_weights_by_features()
 
