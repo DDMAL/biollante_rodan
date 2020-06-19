@@ -215,14 +215,13 @@ class BiollanteRodan(RodanTask):
         raise NotImplementedError
 
     def test_my_task(self, testcase):
-        with NTA() as outfile:
+        with NTF() as outfile:
             inputs = {
                 "kNN Training Data": [
                     {
-                        "resource_path": os.path.abspath(
-                            "./test_resources/Dalhousie_TD_421_422_NC-based_" +
-                            "classifier.xml"
-                        )
+                        "resource_path":
+                            "rodan/jobs/biollante-rodan/test_resources/" +
+                            "Dalhousie_TD_421_422_NC-based_classifier.xml"
                     }
                 ]
             }
@@ -235,18 +234,20 @@ class BiollanteRodan(RodanTask):
             # Test initial run
             result = self.run_my_task(inputs, {}, outputs)
             testcase.assertTrue(
-                isinstance(result, self.WAITING_FOR_INPUT)
+                isinstance(result, self.WAITING_FOR_INPUT),
+                "Result was actually %s" % type(result)
             )
             testcase.assertEqual(
-                result.update_settings["@state"],
-                STATE_NOT_OPTIMIZING
+                result.settings_update["@state"],
+                STATE_NOT_OPTIMIZING,
+                "State was %s" % str(result.settings_update["@state"])
             )
 
             # Start without enough GA optimizer settings
             with testcase.assertRaises(self.ManualPhaseException):
                 self.validate_my_user_input(
                     inputs,
-                    {"@state": STATE_OPTIMIZING, "@num_features": 42},
+                    {"@state": STATE_NOT_OPTIMIZING, "@num_features": 42},
                     {"method": "start"}
                 )
 
@@ -258,7 +259,8 @@ class BiollanteRodan(RodanTask):
             testcase.assertTrue(self.run_my_task(inputs, settings, outputs))
             outfile.seek(0)
             contents = outfile.read()
-            testcase.assertEqual(contents, "Hello, Test!")
+            testcase.assertEqual(contents, "Hello, Test!", contents)
+            return True
 
     def knnga_dict(self):
         """
