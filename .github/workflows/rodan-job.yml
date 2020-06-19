@@ -35,4 +35,4 @@ jobs:
         flake8 . --count --statistics
     - name: Run tests
       run: |
-        python -m unittest discover
+        python -m unittest knnga_util_test
